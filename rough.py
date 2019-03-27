@@ -11,6 +11,7 @@ from PyQt4 import QtCore, QtGui
 import matplotlib
 import pyqtgraph
 from pyqtgraph.widgets import MatplotlibWidget
+from uiCallBacks import UICallBacks
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -27,6 +28,9 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_c(object):
+
+    uiCB = UICallBacks()
+
     def setupUi(self, c):
         c.setObjectName(_fromUtf8("c"))
         c.resize(925, 780)
@@ -142,12 +146,19 @@ class Ui_c(object):
         self.retranslateUi(c)
         QtCore.QMetaObject.connectSlotsByName(c)
 
+        #Sets up button callbacks 
+        self.setUpCallBacks()
+
+    def setUpCallBacks(self):
+        self.connectBtn.clicked.connect(self.uiCB.onConnectButton)
+
     def retranslateUi(self, c):
         c.setWindowTitle(_translate("c", "WheelSense Data Collection", None))
         self.connectBtn.setText(_translate("c", "Connect", None))
         self.startBtn.setText(_translate("c", "Start/Stop", None))
         self.saveBtn.setText(_translate("c", "Save Data", None))
         self.resetBtn.setText(_translate("c", "Clear", None))
+
 
 
 
