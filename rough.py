@@ -11,7 +11,10 @@ from PyQt4 import QtCore, QtGui
 import matplotlib
 import pyqtgraph
 from pyqtgraph.widgets import MatplotlibWidget
-from uiCallBacks import UICallBacks
+#from uiCallBacks import UICallBacks
+
+import time
+import types
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -29,7 +32,12 @@ except AttributeError:
 
 class Ui_c(object):
 
-    uiCB = UICallBacks()
+    #uiCB = UICallBacks()
+
+    def updateGraphData(self, plotHandle, lineHandle, newXData, newYData):
+        lineHandle.set_xdata(newXData)
+        lineHandle.set_ydata(newYData)
+        plotHandle.draw()
 
     def setupUi(self, c):
         c.setObjectName(_fromUtf8("c"))
@@ -43,74 +51,129 @@ class Ui_c(object):
         self.gridLayout.setSpacing(0)
 
         self.xAccPlot = MatplotlibWidget.MatplotlibWidget()
-        xAccFig = self.xAccPlot.getFigure()
-        xAccFig.tight_layout(pad=0.3)
-        xAccFig.set_dpi(750)
-        xAccFig.set_size_inches(0.33, 0.33)
+        self.xAccFig = self.xAccPlot.getFigure()
+        self.xAccFig.tight_layout(pad=0.3)
+        self.xAccFig.set_dpi(750)
+        self.xAccFig.set_size_inches(0.33, 0.33)
         self.xAccPlot.setObjectName(_fromUtf8("xAccPlot"))
         self.gridLayout.addWidget(self.xAccPlot, 0, 0, 1, 1)
-        plotArea = xAccFig.add_subplot(111)
-
-        plotArea.plot([0,1,2,3],[0,1,2,3])
-        plotArea.plot([0, 1, 2, 3], [1, 2, 3, 4])
-        xAccFig.subplots_adjust(bottom=0.15)
+        self.xAccPlotArea = self.xAccFig.add_subplot(111)
+        self.xAccLines = {}
+        self.xAccLines['leftWheel'],  = self.xAccPlotArea.plot([0,1,2,3],[0,1,2,3])
+        #self.xAccLines['rightWheel'], = self.xAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        #self.xAccLines['frame'], = self.xAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
         self.xAccPlot.draw()
-
-
-        self.zAccPlot = MatplotlibWidget.MatplotlibWidget()
-        zAccFig = self.zAccPlot.getFigure()
-        zAccFig.tight_layout(pad=0.1)
-        zAccFig.set_dpi(750)
-        zAccFig.set_size_inches(0.33,0.33)
-        self.zAccPlot.draw()
-        #self.zAccPlot.setObjectName(_fromUtf8("zAccPlot"))
-        self.gridLayout.addWidget(self.zAccPlot, 0, 2, 1, 1)
-        #self.zAccPlot.setRange(xRange=[0, 100], yRange=[0, 100])
+        self.xAccFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.xAccPlot, self.xAccLines['leftWheel'], [0, 1, 2, 3],[1, 2, 3, 4])
 
         self.yAccPlot = MatplotlibWidget.MatplotlibWidget()
-        yAccFig = self.yAccPlot.getFigure()
-        yAccFig.tight_layout(pad=0.1)
-        yAccFig.set_dpi(750)
-        yAccFig.set_size_inches(0.33,0.33)
+        self.yAccFig = self.yAccPlot.getFigure()
+        self.yAccFig.tight_layout(pad=0.1)
+        self.yAccFig.set_dpi(750)
+        self.yAccFig.set_size_inches(0.33,0.33)
         self.yAccPlot.setObjectName(_fromUtf8("yAccPlot"))
         self.gridLayout.addWidget(self.yAccPlot, 0, 1, 1, 1)
+        self.yAccPlotArea = self.yAccFig.add_subplot(111)
+        self.yAccLines = {}
+        self.yAccLines['leftWheel'], = self.yAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        #self.yAccLines['rightWheel'], = self.yAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        #self.yAccLines['frame'], = self.yAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.yAccPlot.draw()
+        self.yAccFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.yAccPlot, self.yAccLines['leftWheel'], [0, 1, 2, 3], [1, 2, 3, 4])
+
+        self.zAccPlot = MatplotlibWidget.MatplotlibWidget()
+        self.zAccFig = self.zAccPlot.getFigure()
+        self.zAccFig.tight_layout(pad=0.1)
+        self.zAccFig.set_dpi(750)
+        self.zAccFig.set_size_inches(0.33,0.33)
+        self.zAccPlot.draw()
+        self.zAccPlot.setObjectName(_fromUtf8("zAccPlot"))
+        self.gridLayout.addWidget(self.zAccPlot, 0, 2, 1, 1)
+        self.zAccPlotArea = self.zAccFig.add_subplot(111)
+        self.zAccLines = {}
+        self.zAccLines['leftWheel'], = self.zAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        #self.zAccLines['rightWheel'], = self.zAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        #self.zAccLines['frame'], = self.zAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.zAccPlot.draw()
+        self.zAccFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.zAccPlot, self.zAccLines['leftWheel'], [0, 1, 2, 3], [1, 2, 3, 4])
 
         self.xGyrPlot = MatplotlibWidget.MatplotlibWidget()
-        xGyrFig = self.xGyrPlot.getFigure()
-        xGyrFig.set_dpi(750)
-        xGyrFig.set_size_inches(0.33, 0.33)
+        self.xGyrFig = self.xGyrPlot.getFigure()
+        self.xGyrFig.set_dpi(750)
+        self.xGyrFig.set_size_inches(0.33, 0.33)
         self.xGyrPlot.setObjectName(_fromUtf8("xGyrPlot"))
         self.gridLayout.addWidget(self.xGyrPlot, 1, 0, 1, 1)
+        self.xGyrPlotArea = self.xGyrFig.add_subplot(111)
+        self.xGyrLines = {}
+        self.xGyrLines['leftWheel'], = self.xGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.xGyrLines['rightWheel'], = self.xGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.xGyrLines['frame'], = self.xGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.xGyrPlot.draw()
+        self.xGyrFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.xGyrPlot, self.xGyrLines['leftWheel'], [0, 1, 2, 3], [1, 2, 3, 4])
 
         self.yGyrPlot = MatplotlibWidget.MatplotlibWidget()
-        yGyrFig = self.yGyrPlot.getFigure()
-        yGyrFig.set_dpi(750)
-        yGyrFig.set_size_inches(0.33, 0.33)
+        self.yGyrFig = self.yGyrPlot.getFigure()
+        self.yGyrFig.set_dpi(750)
+        self.yGyrFig.set_size_inches(0.33, 0.33)
         self.yGyrPlot.setObjectName(_fromUtf8("yGyrPlot"))
         self.gridLayout.addWidget(self.yGyrPlot, 1, 1, 1, 1)
+        self.yGyrPlotArea = self.yGyrFig.add_subplot(111)
+        self.yGyrLines = {}
+        self.yGyrLines['leftWheel'], = self.yGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.yGyrLines['rightWheel'], = self.yGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.yGyrLines['frame'], = self.yGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.yGyrPlot.draw()
+        self.yGyrFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.yGyrPlot, self.yGyrLines['leftWheel'], [0, 1, 2, 3], [1, 2, 3, 4])
 
         self.zGyrPlot = MatplotlibWidget.MatplotlibWidget()
-        zGyrFig = self.zGyrPlot.getFigure()
-        zGyrFig.set_dpi(750)
-        zGyrFig.set_size_inches(0.33, 0.33)
+        self.zGyrFig = self.zGyrPlot.getFigure()
+        self.zGyrFig.set_dpi(750)
+        self.zGyrFig.set_size_inches(0.33, 0.33)
         self.zGyrPlot.setObjectName(_fromUtf8("zGyrPlot"))
         self.gridLayout.addWidget(self.zGyrPlot, 1, 2, 1, 1)
+        self.zGyrPlotArea = self.zGyrFig.add_subplot(111)
+        self.zGyrLines = {}
+        self.zGyrLines['leftWheel'], = self.zGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.zGyrLines['rightWheel'], = self.zGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.zGyrLines['frame'], = self.zGyrPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.zGyrPlot.draw()
+        self.zGyrFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.zGyrPlot, self.zGyrLines['leftWheel'], [0, 1, 2, 3], [1, 2, 3, 4])
 
         self.orientationPlot = MatplotlibWidget.MatplotlibWidget()
-        orientationFig = self.orientationPlot.getFigure()
-        orientationFig.tight_layout(pad=0.1)
-        orientationFig.set_dpi(750)
-        orientationFig.set_size_inches(0.33,0.33)
+        self.orientationFig = self.orientationPlot.getFigure()
+        self.orientationFig.tight_layout(pad=0.1)
+        self.orientationFig.set_dpi(750)
+        self.orientationFig.set_size_inches(0.33,0.33)
         self.orientationPlot.setObjectName(_fromUtf8("orientationPlot"))
         self.gridLayout.addWidget(self.orientationPlot, 2, 0, 1, 1)
+        self.orientationPlotArea = self.orientationFig.add_subplot(111)
+        self.orientationLines = {}
+        self.orientationLines['pitch'], = self.orientationPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.orientationLines['roll'], = self.orientationPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.orientationLines['yaw'], = self.orientationPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.orientationPlot.draw()
+        self.orientationFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.orientationPlot, self.orientationLines['pitch'], [0, 1, 2, 3], [1, 2, 3, 4])
 
         self.ultrasonicPlot = MatplotlibWidget.MatplotlibWidget()
-        ultrasonicFig = self.ultrasonicPlot.getFigure()
-        ultrasonicFig.tight_layout(pad=0.1)
-        ultrasonicFig.set_dpi(750)
-        ultrasonicFig.set_size_inches(0.33,0.33)
+        self.ultrasonicFig = self.ultrasonicPlot.getFigure()
+        self.ultrasonicFig.tight_layout(pad=0.1)
+        self.ultrasonicFig.set_dpi(750)
+        self.ultrasonicFig.set_size_inches(0.33,0.33)
         self.ultrasonicPlot.setObjectName(_fromUtf8("ultrasonicPlot"))
         self.gridLayout.addWidget(self.ultrasonicPlot, 2, 1, 1, 1)
+        self.ultrasonicPlotArea = self.ultrasonicFig.add_subplot(111)
+        self.ultrasonicLines = {}
+        self.ultrasonicLines['front'], = self.ultrasonicPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        # self.ultrasonicLines['down'], = self.ultrasonicPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+        self.ultrasonicPlot.draw()
+        self.ultrasonicFig.subplots_adjust(bottom=0.15)
+        self.updateGraphData(self.ultrasonicPlot, self.ultrasonicLines['front'], [0, 1, 2, 3], [1, 2, 3, 4])
 
         self.cameraPlot = MatplotlibWidget.MatplotlibWidget()
         cameraFig = self.cameraPlot.getFigure()
@@ -147,10 +210,11 @@ class Ui_c(object):
         QtCore.QMetaObject.connectSlotsByName(c)
 
         #Sets up button callbacks 
-        self.setUpCallBacks()
+        #self.setUpCallBacks()
 
-    def setUpCallBacks(self):
-        self.connectBtn.clicked.connect(self.uiCB.onConnectButton)
+
+    #def setUpCallBacks(self):
+    #    self.connectBtn.clicked.connect(self.uiCB.onConnectButton)
 
     def retranslateUi(self, c):
         c.setWindowTitle(_translate("c", "WheelSense Data Collection", None))
