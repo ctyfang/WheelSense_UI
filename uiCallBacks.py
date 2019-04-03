@@ -6,10 +6,12 @@ from dataTransferServer import *
 
 class UICallBacks:
     def __init__(self):
-		self._msgServerThread = msgServer(dataTransferMode.BLUETOOTH, commonBTAdress.RASPBERRYBTADDR)
-		self._msgServerThread.start()    	
+    	pass
+		# self._msgServerThread = msgServer(dataTransferMode.BLUETOOTH, commonBTAdress.RASPBERRYBTADDR)
+		# self._msgServerThread.start()    	
         
     def onConnectButton(self): 
         self._msgServerThread.connectToClientBT()
 
-        pass
+
+#def onDataRecieve()

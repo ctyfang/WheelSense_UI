@@ -11,10 +11,9 @@ from PyQt4 import QtCore, QtGui
 import matplotlib
 import pyqtgraph
 from pyqtgraph.widgets import MatplotlibWidget
-#from uiCallBacks import UICallBacks
+from uiCallBacks import UICallBacks
+from remotePAWDataAcquisition import *
 
-import time
-import types
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -57,11 +56,13 @@ class Ui_c(object):
         self.xAccFig.set_size_inches(0.33, 0.33)
         self.xAccPlot.setObjectName(_fromUtf8("xAccPlot"))
         self.gridLayout.addWidget(self.xAccPlot, 0, 0, 1, 1)
+
         self.xAccPlotArea = self.xAccFig.add_subplot(111)
         self.xAccLines = {}
         self.xAccLines['leftWheel'],  = self.xAccPlotArea.plot([0,1,2,3],[0,1,2,3])
         #self.xAccLines['rightWheel'], = self.xAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
         #self.xAccLines['frame'], = self.xAccPlotArea.plot([0, 1, 2, 3], [0, 1, 2, 3])
+
         self.xAccPlot.draw()
         self.xAccFig.subplots_adjust(bottom=0.15)
         self.updateGraphData(self.xAccPlot, self.xAccLines['leftWheel'], [0, 1, 2, 3],[1, 2, 3, 4])
@@ -212,9 +213,23 @@ class Ui_c(object):
         #Sets up button callbacks 
         #self.setUpCallBacks()
 
+    def rightHC05PlotXAxis(self,x,y):
+        # self.xAxisPlotArea.plot(x,y)
+        self.xAxisPlotArea.plot(y, 'r-')
 
-    #def setUpCallBacks(self):
-    #    self.connectBtn.clicked.connect(self.uiCB.onConnectButton)
+        self.xAccPlot.draw()
+
+
+    # def leftHC05PlotYAxis(self, x, y):
+    #     self.yAccPlot.plot()
+
+
+
+    def setUpCallBacks(self):
+        #Connect to the server.
+        # self.connectBtn.clicked.connect(self.uiCB.onConnectButton)
+        pass
+
 
     def retranslateUi(self, c):
         c.setWindowTitle(_translate("c", "WheelSense Data Collection", None))
@@ -227,10 +242,22 @@ class Ui_c(object):
 
 
 if __name__ == "__main__":
+
+
+
     import sys
     app = QtGui.QApplication(sys.argv)
     c = QtGui.QDialog()
     ui = Ui_c()
     ui.setupUi(c)
+
+    
+    # for i in range(4):
+    #     print(i)
+    #     ui.plotXAxis(i, i)
+
+    # ui.plotXAxis([0,1,2,3],[0,1,2,4.5])
     c.show()
+    _mainDataAcquisition = remotePAWDataAcquisition(ui)
+    _mainDataAcquisition.start()
     sys.exit(app.exec_())
